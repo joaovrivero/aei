@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<div class="conteiner">
+			<div class="bar"></div>
+		</div>
+	</body>
+</html>
+
+<style>
+	* {
+		margin: 0;
+		padding: 0;
+	}
+
+	body {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100vh;
+	}
+
+	.conteiner {
+		width: 250px;
+		height: 40px;
+		border: 1px solid black;
+	}
+
+	.conteiner:hover .bar {
+		animation-play-state: running;
+	}
+
+	.bar {
+		width: 0;
+		height: 100%;
+		background-color: red;
+		animation: loadingBar 2s linear;
+		animation-fill-mode: forwards;
+		animation-play-state: paused;
+	}
+
+	@keyframes loadingBar {
+		0% {
+			width: 0%;
+		}
+		25% {
+			width: 25%;
+		}
+		50% {
+			width: 50%;
+		}
+		75% {
+			width: 75%;
+		}
+		100% {
+			width: 100%;
+		}
+	}
+</style>

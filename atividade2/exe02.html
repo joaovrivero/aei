@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<div class="container">
+			<div class="loader"></div>
+		</div>
+	</body>
+</html>
+
+<style>
+	* {
+		margin: 0;
+		padding: 0;
+	}
+
+	body {
+		height: 100vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 250px;
+		height: 250px;
+		border: 2px dashed black;
+	}
+
+	.loader {
+		width: 150px;
+		height: 150px;
+		border-radius: 50%;
+		border-top: 15px solid black;
+		border-right: 15px solid rgb(85, 83, 83);
+		border-bottom: 15px solid gray;
+		border-left: 15px solid rgb(190, 186, 186);
+	}
+
+	.container:hover .loader {
+		animation: loading-hover 1.5s linear infinite;
+	}
+
+	@keyframes loading-hover {
+		0% {
+			transform: rotate(0);
+		}
+		25% {
+			transform: rotate(90deg);
+		}
+		50% {
+			transform: rotate(180deg);
+		}
+		75% {
+			transform: rotate(270deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+</style>

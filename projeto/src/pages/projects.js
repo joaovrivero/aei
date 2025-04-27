@@ -4,8 +4,8 @@ import { WorkGridItem } from '../components/grid-item'
 import thumbproject1 from '../public/images/works/shrek.jpg'
 import Layout from '../components/layouts/article'
 
-const Works = () => (
-  <Layout title="Works">
+const Projects = () => (
+  <Layout title="Projects">
     <Container>
       <Heading as="h3" fontSize={20} mb={4}>
         Works
@@ -25,5 +25,5 @@ const Works = () => (
   </Layout>
 )
 
-export default Works
+export default Projects
 export { getServerSideProps } from '../components/chakra'

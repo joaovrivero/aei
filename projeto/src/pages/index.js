@@ -44,7 +44,7 @@ const Page = () => {
               João Rivero
             </Heading>
             <Paragraph>
-              Digital Artisan ( Developer / Writer / Problem Solver ){' '}
+              Digital Artisan ( Developer / Engineer / Writer ){' '}
             </Paragraph>
           </Box>
           <Box
@@ -113,7 +113,7 @@ const Page = () => {
           </BioSection>
           <BioSection>
             <BioYear>2024</BioYear>
-            Internship on Compass.uol with AWS cloud engineering.
+            Internship on Compass.uol with AWS data engineering.
           </BioSection>
           <BioSection>
             <BioYear>2025</BioYear>
@@ -130,7 +130,7 @@ const Page = () => {
             <Link href="https://letterboxd.com/joaovrivero/" target="_blank">
               Movies
             </Link>
-            , Music, Japanese Culture
+            , Music, JRPGS, Books,
           </Paragraph>
         </Section>
 

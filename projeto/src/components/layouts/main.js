@@ -1,11 +1,11 @@
 import Head from 'next/head'
 import Navbar from '../navbar.js'
 import { Box, Container } from '@chakra-ui/react'
-import VoxelArt from '../voxel-art'
+import VoxelArt from '../voxel-art.js'
 import dynamic from 'next/dynamic'
 import Footer from '../footer.js'
 
-const LazyVoxelArt = dynamic(() => import('../voxel-art'), {
+const LazyVoxelArt = dynamic(() => import('../voxel-art.js'), {
   ssr: false,
   loading: () => <VoxelArt />
 })
