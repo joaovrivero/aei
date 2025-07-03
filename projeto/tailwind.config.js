@@ -43,7 +43,11 @@ module.exports = {
                 'fade-in': 'fadeIn 0.8s ease-in-out',
                 'slide-up': 'slideUp 0.8s ease-in-out',
                 'slide-down': 'slideDown 0.8s ease-in-out',
-                'rotate': 'rotate 0.3s ease-in-out',
+                'scale-in': 'scaleIn 0.5s ease-in-out',
+                'scale-bounce': 'scaleBounce 0.6s ease-in-out',
+                'rotate-slow': 'rotateSlow 0.3s ease-in-out',
+                'rotate-fast': 'rotateFast 0.2s ease-in-out',
+                'zoom-in': 'zoomIn 0.4s ease-in-out',
                 'bounce-soft': 'bounceSoft 2s infinite',
             },
             keyframes: {
@@ -62,6 +66,27 @@ module.exports = {
                 rotate: {
                     '0%': { transform: 'rotate(0deg)' },
                     '100%': { transform: 'rotate(20deg)' },
+                },
+                scaleIn: {
+                    '0%': { opacity: '0', transform: 'scale(0.95)' },
+                    '100%': { opacity: '1', transform: 'scale(1)' },
+                },
+                scaleBounce: {
+                    '0%': { transform: 'scale(1)' },
+                    '50%': { transform: 'scale(1.05)' },
+                    '100%': { transform: 'scale(1)' },
+                },
+                zoomIn: {
+                    '0%': { opacity: '0', transform: 'scale(0.8)' },
+                    '100%': { opacity: '1', transform: 'scale(1)' },
+                },
+                rotateSlow: {
+                    '0%': { transform: 'rotate(0deg)' },
+                    '100%': { transform: 'rotate(5deg)' },
+                },
+                rotateFast: {
+                    '0%': { transform: 'rotate(0deg)' },
+                    '100%': { transform: 'rotate(15deg)' },
                 },
                 bounceSoft: {
                     '0%, 20%, 50%, 80%, 100%': { transform: 'translateY(0)' },

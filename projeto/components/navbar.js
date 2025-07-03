@@ -8,14 +8,14 @@ import ThemeToggleButton from './theme-toggle-button'
 const LinkItem = ({ href, path, target, children, ...props }) => {
   const active = path === href
   const { isDark } = useTheme()
-  const inactiveColor = isDark ? 'text-white/90' : 'text-gray-200'
+  const inactiveColor = isDark ? 'text-white/90' : 'text-gray-700'
 
   return (
     <NextLink
       href={href}
-      className={`px-2 py-2 rounded transition-colors duration-200 ${active
-        ? 'bg-primary-500 text-white'
-        : `${inactiveColor} hover:bg-gray-100 dark:hover:bg-gray-800`
+      className={`px-3 py-2 rounded transition-colors duration-200 font-medium ${active
+        ? 'bg-primary-500 text-white shadow-sm'
+        : `${inactiveColor} hover:bg-primary-50 hover:text-primary-700 dark:hover:bg-gray-800 dark:hover:text-white`
         }`}
       target={target}
       {...props}
@@ -49,8 +49,8 @@ const Navbar = props => {
         </div>
 
         <div className="hidden md:flex items-center flex-grow space-x-4">
-          <LinkItem href="/works" path={path}>
-            Works
+          <LinkItem href="/projects" path={path}>
+            Projects
           </LinkItem>
           <LinkItem href="/posts" path={path}>
             Wallpapers
@@ -85,8 +85,8 @@ const Navbar = props => {
                 <NextLink href="/" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                   About
                 </NextLink>
-                <NextLink href="/works" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                  Works
+                <NextLink href="/projects" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                  Projects
                 </NextLink>
                 <NextLink href="/wallpapers" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                   Wallpapers
