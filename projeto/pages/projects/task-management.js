@@ -5,7 +5,7 @@ import {
   List,
   ListItem,
   Badge
-} from '../../components/temp-ui'
+} from '../../components/ui'
 import {
   Title,
   Meta,

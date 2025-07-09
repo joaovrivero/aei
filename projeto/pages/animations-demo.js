@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import Layout from '../components/layouts/main'
-import { Container, Box, Heading, Button } from '../components/temp-ui'
+import { Container, Box, Heading, Button } from '../components/ui'
 import EnhancedButton from '../components/enhanced-button'
 import AnimatedSVG from '../components/animated-svg'
 import { AnimateWrapper } from '../lib/animate-css-utils'

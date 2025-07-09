@@ -108,8 +108,15 @@ export const useAnimateOnScroll = (animation, options = {}) => {
     const elementRef = useRef(null)
     const [isVisible, setIsVisible] = useState(false)
     const [hasAnimated, setHasAnimated] = useState(false)
+    const [isClient, setIsClient] = useState(false)
 
     useEffect(() => {
+        setIsClient(true)
+    }, [])
+
+    useEffect(() => {
+        if (!isClient) return // Only run on client side
+        
         const element = elementRef.current // Capture ref value
         
         const observer = new IntersectionObserver(
@@ -134,9 +141,9 @@ export const useAnimateOnScroll = (animation, options = {}) => {
                 observer.unobserve(element)
             }
         }
-    }, [hasAnimated])
+    }, [hasAnimated, isClient])
 
-    const animateClass = isVisible ? buildAnimateClass(animation, options) : ''
+    const animateClass = isClient && isVisible ? buildAnimateClass(animation, options) : ''
 
     return [elementRef, animateClass]
 }

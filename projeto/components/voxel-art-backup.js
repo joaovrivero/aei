@@ -14,42 +14,57 @@ const VoxelArt = () => {
   const [loading, setLoading] = useState(true)
   const [_camera, setCamera] = useState()
   const [_controls, setControls] = useState()
-  const [isClient, setIsClient] = useState(false)
   
-  // Refs para controles customizados
-  const keysRef = useRef({})
-  const mouseStateRef = useRef({ isDown: false, x: 0, y: 0, deltaX: 0, deltaY: 0 })
+  // Refs para evitar re-renders desnecessários
+  const sceneRef = useRef()
   const modelRef = useRef()
+  
+  // Estados para controles customizados
+  const keysRef = useRef({
+    w: false, a: false, s: false, d: false,
+    q: false, e: false, shift: false, space: false
+  })
+  
+  const mouseStateRef = useRef({
+    isDown: false,
+    x: 0,
+    y: 0,
+    deltaX: 0,
+    deltaY: 0
+  })
 
-  // Set client flag on mount
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  // ✅ SKYBOX CREATION
+  // Função para criar skybox
   const createSkybox = useCallback((scene) => {
-    if (typeof window === 'undefined') return null
+    const loader = new THREE.CubeTextureLoader()
     
+    // Criando skybox procedural (sem texturas externas)
     const skyboxGeometry = new THREE.SphereGeometry(1000, 32, 32)
-    
-    // Gradient texture for skybox
-    const canvas = document.createElement('canvas')
-    canvas.width = 256
-    canvas.height = 256
-    const context = canvas.getContext('2d')
-    
-    // Create gradient from dark blue to light purple
-    const gradient = context.createLinearGradient(0, 0, 0, 256)
-    gradient.addColorStop(0, '#0a0a0a')
-    gradient.addColorStop(0.5, '#1a1a2e')
-    gradient.addColorStop(1, '#16213e')
-    
-    context.fillStyle = gradient
-    context.fillRect(0, 0, 256, 256)
-    
-    const texture = new THREE.CanvasTexture(canvas)
-    const skyboxMaterial = new THREE.MeshBasicMaterial({
-      map: texture,
+    const skyboxMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        topColor: { value: new THREE.Color(0x0077ff) },
+        bottomColor: { value: new THREE.Color(0xffffff) },
+        offset: { value: 33 },
+        exponent: { value: 0.6 }
+      },
+      vertexShader: `
+        varying vec3 vWorldPosition;
+        void main() {
+          vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+          vWorldPosition = worldPosition.xyz;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 topColor;
+        uniform vec3 bottomColor;
+        uniform float offset;
+        uniform float exponent;
+        varying vec3 vWorldPosition;
+        void main() {
+          float h = normalize(vWorldPosition + offset).y;
+          gl_FragColor = vec4(mix(bottomColor, topColor, max(pow(max(h, 0.0), exponent), 0.0)), 1.0);
+        }
+      `,
       side: THREE.BackSide
     })
     
@@ -59,7 +74,7 @@ const VoxelArt = () => {
     return skybox
   }, [])
 
-  // ✅ KEYBOARD CONTROLS
+  // Controles de teclado
   const handleKeyDown = useCallback((event) => {
     const key = event.key.toLowerCase()
     keysRef.current[key] = true
@@ -70,7 +85,7 @@ const VoxelArt = () => {
     keysRef.current[key] = false
   }, [])
 
-  // ✅ MOUSE CONTROLS
+  // Controles de mouse customizados
   const handleMouseDown = useCallback((event) => {
     mouseStateRef.current = {
       ...mouseStateRef.current,
@@ -82,10 +97,13 @@ const VoxelArt = () => {
 
   const handleMouseMove = useCallback((event) => {
     if (mouseStateRef.current.isDown) {
-      mouseStateRef.current.deltaX = event.clientX - mouseStateRef.current.x
-      mouseStateRef.current.deltaY = event.clientY - mouseStateRef.current.y
-      mouseStateRef.current.x = event.clientX
-      mouseStateRef.current.y = event.clientY
+      mouseStateRef.current = {
+        ...mouseStateRef.current,
+        deltaX: event.clientX - mouseStateRef.current.x,
+        deltaY: event.clientY - mouseStateRef.current.y,
+        x: event.clientX,
+        y: event.clientY
+      }
     }
   }, [])
 
@@ -98,7 +116,7 @@ const VoxelArt = () => {
     }
   }, [])
 
-  // ✅ CUSTOM CONTROLS APPLICATION
+  // Função para aplicar controles customizados
   const applyCustomControls = useCallback((camera, model, controls) => {
     if (!camera || !model) return
 
@@ -107,43 +125,40 @@ const VoxelArt = () => {
     const moveSpeed = keys.shift ? 0.2 : 0.1
     const rotationSpeed = 0.01
 
-    // ✅ KEYBOARD CONTROLS - Camera movement
-    if (keys.w || keys.arrowup) camera.position.z -= moveSpeed
-    if (keys.s || keys.arrowdown) camera.position.z += moveSpeed
-    if (keys.a || keys.arrowleft) camera.position.x -= moveSpeed
-    if (keys.d || keys.arrowright) camera.position.x += moveSpeed
+    // Controles de teclado - movimento da câmera
+    if (keys.w) camera.position.z -= moveSpeed
+    if (keys.s) camera.position.z += moveSpeed
+    if (keys.a) camera.position.x -= moveSpeed
+    if (keys.d) camera.position.x += moveSpeed
     if (keys.q) camera.position.y -= moveSpeed
     if (keys.e) camera.position.y += moveSpeed
 
-    // ✅ MOUSE CONTROLS - Model rotation
+    // Controles de mouse - rotação do modelo
     if (mouseState.isDown && (mouseState.deltaX !== 0 || mouseState.deltaY !== 0)) {
       model.rotation.y += mouseState.deltaX * rotationSpeed
       model.rotation.x += mouseState.deltaY * rotationSpeed
       
-      // Reset deltas after applying
+      // Reset deltas após aplicar
       mouseState.deltaX = 0
       mouseState.deltaY = 0
     }
 
-    // ✅ SPACE KEY - Reset position
-    if (keys[' '] || keys.space) {
+    // Tecla Space - reset da posição
+    if (keys.space) {
       model.rotation.set(0, 0, 0)
       camera.position.set(
         20 * Math.sin(0.2 * Math.PI),
         10,
         20 * Math.cos(0.2 * Math.PI)
       )
-      keys[' '] = false
-      keys.space = false
+      keys.space = false // Reset para evitar loop
     }
 
-    // Update controls
+    // Atualizar controles
     controls.update()
   }, [])
 
   const handleWindowResize = useCallback(() => {
-    if (typeof window === 'undefined') return
-    
     const { current: renderer } = refRenderer
     const { current: container } = refContainer
     if (container && renderer) {
@@ -154,8 +169,6 @@ const VoxelArt = () => {
   }, [])
 
   useEffect(() => {
-    if (!isClient) return // Only run on client side
-    
     const { current: container } = refContainer
     if (container) {
       const scW = container.clientWidth
@@ -172,8 +185,9 @@ const VoxelArt = () => {
       refRenderer.current = renderer
       
       const scene = new THREE.Scene()
+      sceneRef.current = scene
 
-      // ✅ SKYBOX IMPLEMENTATION
+      // ✅ SKYBOX IMPLEMENTADO
       createSkybox(scene)
 
       const target = new THREE.Vector3(-0.5, 1.2, 0)
@@ -196,11 +210,11 @@ const VoxelArt = () => {
       camera.lookAt(target)
       setCamera(camera)
 
-      // Enhanced lighting
+      // Iluminação melhorada
       const ambientLight = new THREE.AmbientLight(0xcccccc, Math.PI)
       scene.add(ambientLight)
       
-      // Additional directional light
+      // Luz direcional adicional
       const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5)
       directionalLight.position.set(10, 10, 5)
       scene.add(directionalLight)
@@ -212,7 +226,7 @@ const VoxelArt = () => {
       controls.dampingFactor = 0.05
       setControls(controls)
 
-      // ✅ CUSTOM MOUSE EVENT LISTENERS
+      // ✅ EVENT LISTENERS PARA MOUSE CUSTOMIZADO
       renderer.domElement.addEventListener('mousedown', handleMouseDown)
       renderer.domElement.addEventListener('mousemove', handleMouseMove)
       renderer.domElement.addEventListener('mouseup', handleMouseUp)
@@ -223,9 +237,6 @@ const VoxelArt = () => {
       }).then((model) => {
         modelRef.current = model
         animate()
-        setLoading(false)
-      }).catch((error) => {
-        console.error('Error loading 3D model:', error)
         setLoading(false)
       })
 
@@ -247,7 +258,7 @@ const VoxelArt = () => {
             p.z * Math.cos(rotSpeed) - p.x * Math.sin(rotSpeed)
           camera.lookAt(target)
         } else {
-          // ✅ APPLY CUSTOM CONTROLS
+          // ✅ CONTROLES CUSTOMIZADOS APLICADOS
           applyCustomControls(camera, modelRef.current, controls)
         }
 
@@ -255,22 +266,18 @@ const VoxelArt = () => {
       }
 
       return () => {
-        if (req) cancelAnimationFrame(req)
+        cancelAnimationFrame(req)
         renderer.domElement.removeEventListener('mousedown', handleMouseDown)
         renderer.domElement.removeEventListener('mousemove', handleMouseMove)
         renderer.domElement.removeEventListener('mouseup', handleMouseUp)
-        if (renderer.domElement.parentNode) {
-          renderer.domElement.parentNode.removeChild(renderer.domElement)
-        }
+        renderer.domElement.remove()
         renderer.dispose()
       }
     }
-  }, [createSkybox, handleMouseDown, handleMouseMove, handleMouseUp, applyCustomControls, isClient])
+  }, [createSkybox, handleMouseDown, handleMouseMove, handleMouseUp, applyCustomControls])
 
-  // ✅ KEYBOARD EVENT LISTENERS
+  // ✅ EVENT LISTENERS PARA TECLADO
   useEffect(() => {
-    if (!isClient) return // Only run on client side
-    
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
     
@@ -278,16 +285,14 @@ const VoxelArt = () => {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [handleKeyDown, handleKeyUp, isClient])
+  }, [handleKeyDown, handleKeyUp])
 
   useEffect(() => {
-    if (!isClient) return // Only run on client side
-    
     window.addEventListener('resize', handleWindowResize, false)
     return () => {
       window.removeEventListener('resize', handleWindowResize, false)
     }
-  }, [handleWindowResize, isClient])
+  }, [handleWindowResize])
 
   return (
     <div className="relative mb-16 md:mb-20">
@@ -298,16 +303,16 @@ const VoxelArt = () => {
         {loading && <VoxelSkeleton className="absolute inset-0" />}
       </div>
       
-      {/* ✅ CUSTOM CONTROLS INSTRUCTIONS */}
+      {/* Instruções de controle */}
       {!loading && (
-        <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white p-3 rounded-lg text-xs backdrop-blur-sm z-10">
+        <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white p-3 rounded-lg text-xs backdrop-blur-sm">
           <div className="font-bold mb-2">🎮 Controls:</div>
           <div className="grid grid-cols-2 gap-1 text-xs">
-            <div>WASD/Arrows - Move camera</div>
+            <div>WASD - Move camera</div>
             <div>QE - Up/Down</div>
             <div>Shift - Fast mode</div>
             <div>Space - Reset</div>
-            <div>Mouse drag - Rotate model</div>
+            <div>Mouse - Rotate model</div>
             <div>Scroll - Zoom</div>
           </div>
         </div>

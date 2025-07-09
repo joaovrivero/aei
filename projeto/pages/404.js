@@ -6,7 +6,7 @@ import {
     Container,
     Divider,
     Button
-} from '../components/temp-ui'
+} from '../components/ui'
 
 const NotFound = () => {
     return (

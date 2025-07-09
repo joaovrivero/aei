@@ -1,12 +1,18 @@
 import Head from 'next/head'
 import Navbar from '../navbar.js'
-import VoxelArt from '../voxel-art'
+import { VoxelSkeleton } from '../skeleton-loader'
 import dynamic from 'next/dynamic'
 import Footer from '../footer.js'
 
 const LazyVoxelArt = dynamic(() => import('../voxel-art'), {
   ssr: false,
-  loading: () => <VoxelArt />
+  loading: () => (
+    <div className="relative mb-16 md:mb-20">
+      <div className="voxel-art mx-auto w-[280px] md:w-[480px] lg:w-[640px] h-[280px] md:h-[480px] lg:h-[640px] relative">
+        <VoxelSkeleton className="absolute inset-0" />
+      </div>
+    </div>
+  )
 })
 
 const Main = ({ children, router }) => {

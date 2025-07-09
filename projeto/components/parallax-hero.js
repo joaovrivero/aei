@@ -10,13 +10,31 @@ const ParallaxHero = ({
 }) => {
     const [scrollY, setScrollY] = useState(0)
     const [isVisible, setIsVisible] = useState(false)
+    const [heroTop, setHeroTop] = useState(0)
+    const [heroHeight, setHeroHeight] = useState(640) // Default fallback for SSR
+    const [isClient, setIsClient] = useState(false)
     const heroRef = useRef(null)
 
     useEffect(() => {
+        // Set client flag
+        setIsClient(true)
+        
         const heroElement = heroRef.current // Capture ref value
         
         const handleScroll = () => {
             setScrollY(window.scrollY)
+        }
+
+        const updateHeroPosition = () => {
+            if (heroElement) {
+                const rect = heroElement.getBoundingClientRect()
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+                setHeroTop(rect.top + scrollTop)
+                
+                // Update hero height based on prop
+                const calculatedHeight = height === '80vh' ? window.innerHeight * 0.8 : window.innerHeight
+                setHeroHeight(calculatedHeight)
+            }
         }
 
         // Intersection Observer for triggering animations
@@ -43,22 +61,37 @@ const ParallaxHero = ({
 
         if (heroElement) {
             observer.observe(heroElement)
+            updateHeroPosition()
         }
 
         window.addEventListener('scroll', handleScroll)
+        window.addEventListener('resize', updateHeroPosition)
 
         return () => {
             window.removeEventListener('scroll', handleScroll)
+            window.removeEventListener('resize', updateHeroPosition)
             if (heroElement) {
                 observer.unobserve(heroElement)
             }
         }
-    }, [isVisible])
+    }, [isVisible, height])
 
-    // Parallax calculations
-    const parallaxOffset = scrollY * 0.5
-    const contentOffset = scrollY * 0.2
-    const opacity = Math.max(0, 1 - scrollY / 800)
+    // Parallax calculations - only if client-side
+    const parallaxOffset = isClient ? scrollY * 0.3 : 0
+    const contentOffset = isClient ? scrollY * 0.1 : 0
+    
+    // Posição relativa do scroll em relação ao hero
+    const heroRelativeScroll = isClient ? scrollY - heroTop : 0
+    
+    // Nova lógica baseada na posição real do hero - só no client
+    const startFade = heroHeight * 0.3 // Começa quando 30% do hero saiu da view
+    const endFade = heroHeight * 1.2 // Termina quando completamente fora
+    let opacity = 1
+    
+    // Só aplica fade se o hero está sendo "scrollado para fora" e estamos no client
+    if (isClient && heroRelativeScroll > startFade) {
+        opacity = Math.max(0.15, 1 - (heroRelativeScroll - startFade) / (endFade - startFade))
+    }
 
     return (
         <div 
@@ -74,11 +107,11 @@ const ParallaxHero = ({
                     scale: 1.1 // Prevent gaps during parallax
                 }}
             >
-                {/* Background Image */}
+                {/* Background Image - com cores mais vibrantes no topo */}
                 <div 
                     className="w-full h-full bg-cover bg-center bg-fixed"
                     style={{
-                        backgroundImage: `linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3)), url(${backgroundImage})`
+                        backgroundImage: `linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(236, 72, 153, 0.25)), url(${backgroundImage})`
                     }}
                 />
                 
@@ -93,27 +126,30 @@ const ParallaxHero = ({
                     {/* Geometric Shapes */}
                     <div 
                         className="absolute top-32 left-1/3 w-20 h-20 border-2 border-white/20 rotate-45 animate-pulse"
-                        style={{ transform: `translateY(${scrollY * 0.3}px) rotate(45deg)` }}
+                        style={{ transform: `translateY(${isClient ? scrollY * 0.3 : 0}px) rotate(45deg)` }}
                     />
                     <div 
                         className="absolute bottom-32 right-1/4 w-16 h-16 bg-gradient-to-br from-primary-400/20 to-accent-light/20 rounded-full animate-pulse"
-                        style={{ transform: `translateY(${scrollY * -0.2}px)` }}
+                        style={{ transform: `translateY(${isClient ? scrollY * -0.2 : 0}px)` }}
                     />
                 </div>
             </div>
 
-            {/* Overlay for better text readability */}
+            {/* Overlay for better text readability - baseado na posição real */}
             <div 
-                className="absolute inset-0 bg-black/30"
-                style={{ opacity: opacity * 0.7 }}
+                className="absolute inset-0 bg-black/20"
+                style={{ 
+                    opacity: isClient && heroRelativeScroll > heroHeight * 0.2 ? 
+                        Math.min(0.4, (heroRelativeScroll - heroHeight * 0.2) / (heroHeight * 0.3)) : 0 
+                }}
             />
 
-            {/* Content Layer */}
+            {/* Content Layer - totalmente visível no topo */}
             <div 
                 className="relative z-10 flex items-center justify-center h-full px-4"
                 style={{
                     transform: `translateY(${contentOffset}px)`,
-                    opacity
+                    opacity: opacity
                 }}
             >
                 <div className="text-center text-white max-w-4xl">
@@ -143,19 +179,28 @@ const ParallaxHero = ({
                         </button>
                     </div>
 
-                    {/* Custom Content */}
+                    {/* Custom Content - sempre visível no topo */}
                     {children && (
-                        <div className="mt-12">
+                        <div 
+                            className="mt-12"
+                            style={{ 
+                                opacity: opacity,
+                                transform: `translateY(${contentOffset * 0.5}px)`
+                            }}
+                        >
                             {children}
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Scroll Indicator */}
+            {/* Scroll Indicator - baseado na posição real do hero */}
             <div 
                 className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce"
-                style={{ opacity }}
+                style={{ 
+                    opacity: isClient && heroRelativeScroll < heroHeight * 0.5 ? 1 : 
+                        isClient ? Math.max(0.1, 1 - (heroRelativeScroll - heroHeight * 0.5) / (heroHeight * 0.3)) : 1
+                }}
             >
                 <div className="flex flex-col items-center">
                     <span className="text-sm mb-2">Scroll Down</span>

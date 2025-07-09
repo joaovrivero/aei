@@ -1,5 +1,5 @@
-// Temporary components to replace Chakra UI during migration
-// These will be properly styled in Phase 2
+// UI Components Library
+// Core UI components built with Tailwind CSS
 
 // Container component
 export const Container = ({ children, className = '', maxW = 'container-custom', ...props }) => (

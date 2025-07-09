@@ -2,6 +2,7 @@ import Layout from '../components/layouts/main'
 import Fonts from '../components/fonts'
 import CustomThemeProvider from '../components/chakra'
 import '../styles/globals.css'
+import 'animate.css'
 
 if (typeof window !== 'undefined') {
     window.history.scrollRestoration = 'manual'

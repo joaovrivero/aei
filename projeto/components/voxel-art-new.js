@@ -14,22 +14,14 @@ const VoxelArt = () => {
   const [loading, setLoading] = useState(true)
   const [_camera, setCamera] = useState()
   const [_controls, setControls] = useState()
-  const [isClient, setIsClient] = useState(false)
   
   // Refs para controles customizados
   const keysRef = useRef({})
   const mouseStateRef = useRef({ isDown: false, x: 0, y: 0, deltaX: 0, deltaY: 0 })
   const modelRef = useRef()
 
-  // Set client flag on mount
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
   // ✅ SKYBOX CREATION
   const createSkybox = useCallback((scene) => {
-    if (typeof window === 'undefined') return null
-    
     const skyboxGeometry = new THREE.SphereGeometry(1000, 32, 32)
     
     // Gradient texture for skybox
@@ -142,8 +134,6 @@ const VoxelArt = () => {
   }, [])
 
   const handleWindowResize = useCallback(() => {
-    if (typeof window === 'undefined') return
-    
     const { current: renderer } = refRenderer
     const { current: container } = refContainer
     if (container && renderer) {
@@ -154,8 +144,6 @@ const VoxelArt = () => {
   }, [])
 
   useEffect(() => {
-    if (!isClient) return // Only run on client side
-    
     const { current: container } = refContainer
     if (container) {
       const scW = container.clientWidth
@@ -265,12 +253,10 @@ const VoxelArt = () => {
         renderer.dispose()
       }
     }
-  }, [createSkybox, handleMouseDown, handleMouseMove, handleMouseUp, applyCustomControls, isClient])
+  }, [createSkybox, handleMouseDown, handleMouseMove, handleMouseUp, applyCustomControls])
 
   // ✅ KEYBOARD EVENT LISTENERS
   useEffect(() => {
-    if (!isClient) return // Only run on client side
-    
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
     
@@ -278,16 +264,14 @@ const VoxelArt = () => {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [handleKeyDown, handleKeyUp, isClient])
+  }, [handleKeyDown, handleKeyUp])
 
   useEffect(() => {
-    if (!isClient) return // Only run on client side
-    
     window.addEventListener('resize', handleWindowResize, false)
     return () => {
       window.removeEventListener('resize', handleWindowResize, false)
     }
-  }, [handleWindowResize, isClient])
+  }, [handleWindowResize])
 
   return (
     <div className="relative mb-16 md:mb-20">

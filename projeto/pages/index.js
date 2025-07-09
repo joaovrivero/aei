@@ -7,7 +7,7 @@ import {
   ListItem,
   Icon,
   Link
-} from '../components/temp-ui'
+} from '../components/ui'
 import Section from '../components/section'
 import Paragraph from '../components/paragraph'
 import { BioSection, BioYear } from '../components/bio'
@@ -59,45 +59,51 @@ const Page = () => {
             Explore My Projects
           </EnhancedButton>
         </div>
+        
+        {/* Profile section with image next to name */}
+        <div className="mt-12 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
+          {/* Profile Image */}
+          <AnimateWrapper animation="zoomIn" trigger="scroll" className="flex-shrink-0">
+            <Box className="border-2 border-white/80 w-[100px] h-[100px] md:w-[120px] md:h-[120px] inline-block rounded-full overflow-hidden interactive-card">
+              <Image
+                src="/images/profile.jpg"
+                alt="Profile image"
+                className="rounded-full"
+                width="120"
+                height="120"
+              />
+            </Box>
+          </AnimateWrapper>
+
+          {/* Welcome message */}
+          <AnimateWrapper animation="fadeInUp" className="flex-grow text-center md:text-left max-w-sm md:max-w-md">
+            <Box className="rounded-lg backdrop-blur-glass p-4">
+              Hello, I&apos;m a full-stack software developer based in Brazil!
+            </Box>
+          </AnimateWrapper>
+        </div>
       </ParallaxHero>
 
-      <Container>
-        <AnimateWrapper animation="fadeInUp" className="animate-entrance">
-          <Box className="rounded-lg backdrop-blur-glass p-3 mb-6 text-center">
-            Hello, I&apos;m a full-stack software developer based in Brazil!
-          </Box>
-        </AnimateWrapper>
+      {/* Espaço adicional entre hero e conteúdo */}
+      <div className="h-16 md:h-24"></div>
 
-        <Box className="md:flex animate-entrance">
-          <Box className="flex-grow">
-            <Heading as="h2" variant="page-title">
-              João Rivero
-            </Heading>
-            <Paragraph>
-              Digital Artisan ( Developer / Writer / Problem Solver ){' '}
-            </Paragraph>
-          </Box>
-          <Box className="flex-shrink-0 mt-4 md:mt-0 md:ml-6 text-center">
-            <AnimateWrapper animation="zoomIn" trigger="scroll">
-              <Box className="border-2 border-white/80 w-[100px] h-[100px] inline-block rounded-full overflow-hidden interactive-card">
-                <Image
-                  src="/images/profile.jpg"
-                  alt="Profile image"
-                  className="rounded-full"
-                  width="100"
-                  height="100"
-                />
-              </Box>
-            </AnimateWrapper>
-          </Box>
-        </Box>
+      <Container>
+        {/* Título principal agora separado do hero */}
+        <AnimateWrapper animation="fadeInUp" className="animate-entrance text-center mb-12">
+          <Heading as="h2" variant="page-title" className="text-3xl md:text-4xl mb-4">
+            About Me
+          </Heading>
+          <Paragraph className="text-lg text-gray-600 dark:text-gray-300">
+            Digital Artisan • Developer • Problem Solver
+          </Paragraph>
+        </AnimateWrapper>
 
         <Section delay={0.1}>
           <AnimateWrapper animation="slideInUp" trigger="scroll" className="animate-scroll">
             <Box className="text-center my-4">
               <EnhancedButton
                 as={NextLink}
-                href="/works"
+                href="/projects"
                 variant="primary"
                 animate={true}
                 animationType="pulse"

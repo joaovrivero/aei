@@ -1,6 +1,6 @@
 import NextLink from 'next/link'
 import Image from 'next/image'
-import { Box, Text, LinkBox, LinkOverlay } from './temp-ui'
+import { Box, Text, LinkBox, LinkOverlay } from './ui'
 
 export const GridItem = ({ children, href, title, thumbnail }) => (
   <Box className="w-full text-center">

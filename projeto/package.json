@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Rivero's website",
   "scripts": {
-    "dev": "next dev -H 0.0.0.0",
+    "dev": "next dev --turbopack",
     "build": "next build",
+    "start": "next start",
     "prettier": "prettier -write .",
     "lint": "next lint"
   },

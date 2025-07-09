@@ -1,5 +1,5 @@
 import NextLink from 'next/link'
-import { Heading, Box, Image, Link, Badge } from './temp-ui'
+import { Heading, Box, Image, Link, Badge } from './ui'
 
 // Ícone de seta para direita (substitui ChevronRightIcon)
 const ChevronRightIcon = () => (
@@ -10,8 +10,8 @@ const ChevronRightIcon = () => (
 
 export const Title = ({ children }) => (
     <Box>
-        <Link as={NextLink} href="/works">
-            Works
+        <Link as={NextLink} href="/projects">
+            Projects
         </Link>
         <span className="inline-flex items-center mx-2">
             <ChevronRightIcon />

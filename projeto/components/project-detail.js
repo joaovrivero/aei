@@ -1,6 +1,6 @@
 import NextLink from 'next/link'
 import Image from 'next/image'
-import { Box, Heading, Badge, Link } from './temp-ui'
+import { Box, Heading, Badge, Link } from './ui'
 import { AnimateWrapper } from '../lib/animate-css-utils'
 import { IoArrowBack, IoLinkOutline, IoLogoGithub, IoGlobeOutline } from 'react-icons/io5'
 

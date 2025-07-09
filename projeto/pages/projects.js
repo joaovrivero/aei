@@ -1,4 +1,4 @@
-import { Container, Heading, SimpleGrid } from '../components/temp-ui'
+import { Container, Heading, SimpleGrid } from '../components/ui'
 import Section from '../components/section'
 import { WorkGridItem } from '../components/grid-item'
 import ProjectSlider from '../components/project-slider'
@@ -15,7 +15,7 @@ const Works = () => {
       description: "Modern portfolio with Next.js, Tailwind CSS, and AnimeJS animations",
       image: "/images/works/shrek.jpg",
       tech: ["Next.js", "Tailwind CSS", "AnimeJS", "Three.js"],
-      link: "/works/project1"
+      link: "/projects/project1"
     },
     {
       id: 2,
@@ -23,7 +23,7 @@ const Works = () => {
       description: "Full-stack e-commerce solution with modern technologies",
       image: "/images/works/shrek.jpg",
       tech: ["React", "Node.js", "MongoDB", "Stripe"],
-      link: "/works/ecommerce-platform"
+      link: "/projects/ecommerce-platform"
     },
     {
       id: 3,
@@ -31,7 +31,7 @@ const Works = () => {
       description: "Collaborative task management with real-time updates",
       image: "/images/works/shrek.jpg",
       tech: ["Next.js", "TypeScript", "Prisma", "Socket.io"],
-      link: "/works/task-management"
+      link: "/projects/task-management"
     },
     {
       id: 4,
@@ -39,7 +39,7 @@ const Works = () => {
       description: "Modern weather application with interactive maps",
       image: "/images/works/shrek.jpg",
       tech: ["React", "Chart.js", "OpenWeather API", "Mapbox"],
-      link: "/works/weather-dashboard"
+      link: "/projects/weather-dashboard"
     }
   ]
 

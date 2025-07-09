@@ -2,15 +2,12 @@ import { useState, useEffect, useRef } from 'react'
 
 const ProjectSlider = ({ projects = [], autoPlay = true, autoPlayInterval = 5000 }) => {
     const [currentSlide, setCurrentSlide] = useState(0)
-    const [isDragging, setIsDragging] = useState(false)
-    const [startX, setStartX] = useState(0)
-    const [scrollLeft, setScrollLeft] = useState(0)
     const sliderRef = useRef(null)
     const autoPlayRef = useRef(null)
 
     // Auto-play functionality
     useEffect(() => {
-        if (autoPlay && !isDragging) {
+        if (autoPlay) {
             autoPlayRef.current = setInterval(() => {
                 setCurrentSlide(prev => (prev + 1) % projects.length)
             }, autoPlayInterval)
@@ -21,49 +18,11 @@ const ProjectSlider = ({ projects = [], autoPlay = true, autoPlayInterval = 5000
                 clearInterval(autoPlayRef.current)
             }
         }
-    }, [autoPlay, autoPlayInterval, projects.length, isDragging])
-
-    // Touch/Mouse handlers for swipe functionality
-    const handleStart = (e) => {
-        setIsDragging(true)
-        const pageX = e.type === 'touchstart' ? e.touches[0].pageX : e.pageX
-        setStartX(pageX - sliderRef.current.offsetLeft)
-        setScrollLeft(sliderRef.current.scrollLeft)
-        
-        if (autoPlayRef.current) {
-            clearInterval(autoPlayRef.current)
-        }
-    }
-
-    const handleMove = (e) => {
-        if (!isDragging) return
-        e.preventDefault()
-        
-        const pageX = e.type === 'touchmove' ? e.touches[0].pageX : e.pageX
-        const x = pageX - sliderRef.current.offsetLeft
-        const walk = (x - startX) * 2
-        sliderRef.current.scrollLeft = scrollLeft - walk
-    }
-
-    const handleEnd = () => {
-        setIsDragging(false)
-        
-        // Snap to nearest slide
-        const slideWidth = sliderRef.current.offsetWidth
-        const newSlide = Math.round(sliderRef.current.scrollLeft / slideWidth)
-        setCurrentSlide(Math.max(0, Math.min(newSlide, projects.length - 1)))
-    }
+    }, [autoPlay, autoPlayInterval, projects.length])
 
     // Navigate to specific slide
     const goToSlide = (index) => {
         setCurrentSlide(index)
-        if (sliderRef.current) {
-            const slideWidth = sliderRef.current.offsetWidth
-            sliderRef.current.scrollTo({
-                left: slideWidth * index,
-                behavior: 'smooth'
-            })
-        }
     }
 
     // Navigation functions
@@ -76,25 +35,25 @@ const ProjectSlider = ({ projects = [], autoPlay = true, autoPlayInterval = 5000
             id: 1,
             title: "E-Commerce Platform",
             description: "Modern React-based shopping platform with advanced features",
-            image: "/images/works/project1.jpg",
+            image: "/images/works/shrek.jpg",
             tech: ["React", "Node.js", "MongoDB"],
-            link: "/works/project1"
+            link: "/projects/ecommerce-platform"
         },
         {
             id: 2,
-            title: "Portfolio Website",
-            description: "Responsive portfolio with Three.js integration",
-            image: "/images/works/project2.jpg",
-            tech: ["Next.js", "Three.js", "Tailwind CSS"],
-            link: "/works/project2"
+            title: "Task Management App",
+            description: "Responsive task management application with real-time updates",
+            image: "/images/works/shrek.jpg",
+            tech: ["Next.js", "Firebase", "Tailwind CSS"],
+            link: "/projects/task-management"
         },
         {
             id: 3,
-            title: "Mobile App",
-            description: "Cross-platform mobile application",
-            image: "/images/works/project3.jpg",
-            tech: ["React Native", "Firebase", "Redux"],
-            link: "/works/project3"
+            title: "Weather Dashboard",
+            description: "Beautiful weather dashboard with forecasting",
+            image: "/images/works/shrek.jpg",
+            tech: ["React", "OpenWeather API", "Chart.js"],
+            link: "/projects/weather-dashboard"
         }
     ]
 
@@ -105,15 +64,8 @@ const ProjectSlider = ({ projects = [], autoPlay = true, autoPlayInterval = 5000
             {/* Slider Container */}
             <div
                 ref={sliderRef}
-                className="flex overflow-x-hidden scroll-smooth"
+                className="flex transition-transform duration-500 ease-in-out"
                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-                onMouseDown={handleStart}
-                onMouseMove={handleMove}
-                onMouseUp={handleEnd}
-                onMouseLeave={handleEnd}
-                onTouchStart={handleStart}
-                onTouchMove={handleMove}
-                onTouchEnd={handleEnd}
             >
                 {slidesToShow.map((project, index) => (
                     <div
@@ -121,13 +73,12 @@ const ProjectSlider = ({ projects = [], autoPlay = true, autoPlayInterval = 5000
                         className="w-full flex-shrink-0 relative group"
                         style={{ minHeight: '400px' }}
                     >
-                        {/* Background Image with Parallax Effect */}
+                        {/* Background Image */}
                         <div className="absolute inset-0 overflow-hidden">
                             <div 
                                 className="w-full h-full bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
                                 style={{
-                                    backgroundImage: `url(${project.image || '/images/works/shrek.jpg'})`,
-                                    transform: `translateX(${(index - currentSlide) * 10}px)`
+                                    backgroundImage: `url(${project.image || '/images/works/shrek.jpg'})`
                                 }}
                             />
                             <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300" />
@@ -159,7 +110,13 @@ const ProjectSlider = ({ projects = [], autoPlay = true, autoPlayInterval = 5000
 
                                 {/* CTA Button */}
                                 <button
-                                    onClick={() => window.open(project.link, '_blank')}
+                                    onClick={() => {
+                                        if (project.link.startsWith('http')) {
+                                            window.open(project.link, '_blank')
+                                        } else {
+                                            window.location.href = project.link
+                                        }
+                                    }}
                                     className="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 group-hover:scale-105 delay-300"
                                 >
                                     View Project

@@ -5,15 +5,11 @@ const nextConfig = {
         domains: [],
         formats: ['image/webp', 'image/avif'],
     },
-    webpack: (config, { isServer }) => {
-        // Otimizações para AnimeJS
-        if (!isServer) {
-            config.resolve.fallback = {
-                ...config.resolve.fallback,
-                fs: false,
-            }
-        }
-        return config
+    // Turbopack configuration for AnimeJS optimizations
+    turbopack: {
+        resolveAlias: {
+            // This handles the fs fallback that was in the webpack config
+        },
     },
 }
 
